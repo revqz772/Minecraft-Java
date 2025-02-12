@@ -1,35 +1,57 @@
 package me.revqz.bountyplugin;
 
+import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.SkullMeta;
+import org.bukkit.plugin.RegisteredServiceProvider;
 import org.bukkit.plugin.java.JavaPlugin;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.UUID;
+
+import java.util.*;
+import java.util.stream.Collectors;
 
 public class BountyPlugin extends JavaPlugin implements Listener {
-
     private final Map<UUID, Double> bounties = new HashMap<>();
+    private Economy economy;
+    private FileConfiguration config;
 
     @Override
     public void onEnable() {
-        // Register event listener
-        getServer().getPluginManager().registerEvents(this, this);
+        saveDefaultConfig();
+        config = getConfig();
+        loadBounties();
+        setupEconomy();
 
-        // Register commands
+        getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("setbounty").setExecutor(new SetBountyCommand());
         this.getCommand("bountylist").setExecutor(new BountyListCommand());
+    }
+
+    private void setupEconomy() {
+        RegisteredServiceProvider<Economy> rsp = getServer().getServicesManager().getRegistration(Economy.class);
+        if (rsp != null) economy = rsp.getProvider();
+    }
+
+    private void loadBounties() {
+        config.getConfigurationSection("bounties").getKeys(false).forEach(key ->
+                bounties.put(UUID.fromString(key), config.getDouble("bounties." + key)));
+    }
+
+    private void saveBounties() {
+        bounties.forEach((uuid, amount) -> config.set("bounties." + uuid, amount));
+        saveConfig();
     }
 
     public class SetBountyCommand implements CommandExecutor {
@@ -39,7 +61,6 @@ public class BountyPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.RED + "Only players can use this command.");
                 return true;
             }
-
             if (args.length != 2) {
                 sender.sendMessage(ChatColor.RED + "Usage: /setbounty <player> <amount>");
                 return true;
@@ -54,13 +75,21 @@ public class BountyPlugin extends JavaPlugin implements Listener {
             double amount;
             try {
                 amount = Double.parseDouble(args[1]);
+                if (amount <= 0) throw new NumberFormatException();
             } catch (NumberFormatException e) {
-                sender.sendMessage(ChatColor.RED + "Invalid amount.");
+                sender.sendMessage(ChatColor.RED + "Invalid amount. Must be a positive number.");
                 return true;
             }
 
-            bounties.put(target.getUniqueId(), amount);
-            sender.sendMessage(ChatColor.GREEN + "Bounty set on " + target.getName() + " for $" + amount);
+            Player player = (Player) sender;
+            if (!economy.withdrawPlayer(player, amount).transactionSuccess()) {
+                sender.sendMessage(ChatColor.RED + "You do not have enough money to place this bounty.");
+                return true;
+            }
+
+            bounties.put(target.getUniqueId(), bounties.getOrDefault(target.getUniqueId(), 0.0) + amount);
+            saveBounties();
+            sender.sendMessage(ChatColor.GREEN + "Bounty placed on " + target.getName() + " for $" + amount);
             return true;
         }
     }
@@ -72,38 +101,48 @@ public class BountyPlugin extends JavaPlugin implements Listener {
                 sender.sendMessage(ChatColor.RED + "Only players can use this command.");
                 return true;
             }
-
             openBountyListGUI((Player) sender);
             return true;
         }
     }
 
     private void openBountyListGUI(Player player) {
-        int size = ((bounties.size() - 1) / 9 + 1) * 9; // Calculate inventory size (multiple of 9)
+        List<UUID> bountyTargets = bounties.keySet().stream().collect(Collectors.toList());
+        int size = ((bountyTargets.size() - 1) / 9 + 1) * 9;
         Inventory gui = Bukkit.createInventory(null, size, "Active Bounties");
 
-        for (Map.Entry<UUID, Double> entry : bounties.entrySet()) {
-            Player target = Bukkit.getPlayer(entry.getKey());
-            if (target != null) {
-                ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
-                SkullMeta meta = (SkullMeta) skull.getItemMeta();
-                if (meta != null) {
-                    meta.setOwningPlayer(target);
-                    meta.setDisplayName(ChatColor.WHITE + target.getName());
-                    meta.setLore(Collections.singletonList(ChatColor.GREEN + "Bounty: $" + entry.getValue()));
-                    skull.setItemMeta(meta);
-                }
-                gui.addItem(skull);
+        for (UUID uuid : bountyTargets) {
+            OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
+            ItemStack skull = new ItemStack(Material.PLAYER_HEAD);
+            SkullMeta meta = (SkullMeta) skull.getItemMeta();
+            if (meta != null) {
+                meta.setOwningPlayer(target);
+                meta.setDisplayName(ChatColor.WHITE + target.getName());
+                meta.setLore(Collections.singletonList(ChatColor.GREEN + "Bounty: $" + bounties.get(uuid)));
+                skull.setItemMeta(meta);
             }
+            gui.addItem(skull);
         }
-
         player.openInventory(gui);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (event.getView().getTitle().equals("Active Bounties")) {
-            event.setCancelled(true); // Prevent item interaction
+            event.setCancelled(true);
         }
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        Player player = event.getEntity();
+        Player killer = player.getKiller();
+        if (killer == null || !bounties.containsKey(player.getUniqueId())) return;
+
+        double reward = bounties.remove(player.getUniqueId());
+        economy.depositPlayer(killer, reward);
+        saveBounties();
+
+        Bukkit.broadcastMessage(ChatColor.GOLD + killer.getName() + " has claimed a bounty of $" + reward + " for eliminating " + player.getName() + "!");
     }
 }
