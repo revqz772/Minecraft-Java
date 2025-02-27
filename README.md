@@ -1,6 +1,7 @@
 This plugin can be used with: Spigot + (recommended) Paper
 
 NOTE: THE PLUGIN WILL HAVE BUGS, Please DM the bug revqz1 On discord.
+NOTE: The plugins DO work with each other e.g The bank plugin , Bounty Plugin , And Coinflip plugin.
 
 I retain all copy rights to these plugins please do not adverise them as your own.
 
