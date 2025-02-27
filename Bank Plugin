@@ -65,53 +65,52 @@ public class BankPlugin extends JavaPlugin implements Listener {
     public class BalanceCommand implements CommandExecutor {
         @Override
         public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
-            if (args.length == 0) {
-                if (sender instanceof Player) {
-                    Player player = (Player) sender;
-                    sender.sendMessage(ChatColor.GREEN + "Your balance: " + balances.getOrDefault(player.getUniqueId(), 0) + " diamonds.");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Only players can check their own balance.");
-                }
+            if (sender instanceof Player) {
+                Player player = (Player) sender;
+                sender.sendMessage(ChatColor.GOLD + "Your balance: " + ChatColor.AQUA + balances.getOrDefault(player.getUniqueId(), 0) + " diamonds.");
             } else {
-                Player target = Bukkit.getPlayer(args[0]);
-                if (target != null) {
-                    sender.sendMessage(ChatColor.GREEN + target.getName() + "'s balance: " + balances.getOrDefault(target.getUniqueId(), 0) + " diamonds.");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "Player not found.");
-                }
+                sender.sendMessage(ChatColor.RED + "Only players can check their own balance.");
             }
             return true;
         }
     }
 
     private void openBankGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 9, "Bank Account");
+        Inventory gui = Bukkit.createInventory(null, 9, ChatColor.DARK_BLUE + "Bank Account");
 
-        ItemStack deposit = new ItemStack(Material.DIAMOND);
+        ItemStack deposit = new ItemStack(Material.EMERALD);
         ItemMeta depositMeta = deposit.getItemMeta();
-        depositMeta.setDisplayName(ChatColor.GREEN + "Deposit");
+        depositMeta.setDisplayName(ChatColor.GREEN + "Deposit Diamonds");
         deposit.setItemMeta(depositMeta);
 
-        ItemStack withdraw = new ItemStack(Material.CHEST);
+        ItemStack withdraw = new ItemStack(Material.GOLD_INGOT);
         ItemMeta withdrawMeta = withdraw.getItemMeta();
-        withdrawMeta.setDisplayName(ChatColor.RED + "Withdraw");
+        withdrawMeta.setDisplayName(ChatColor.RED + "Withdraw Diamonds");
         withdraw.setItemMeta(withdrawMeta);
 
-        gui.setItem(3, deposit);
-        gui.setItem(5, withdraw);
+        ItemStack balance = new ItemStack(Material.PAPER);
+        ItemMeta balanceMeta = balance.getItemMeta();
+        balanceMeta.setDisplayName(ChatColor.YELLOW + "Current Balance: " + ChatColor.AQUA + balances.getOrDefault(player.getUniqueId(), 0));
+        balance.setItemMeta(balanceMeta);
+
+        gui.setItem(2, deposit);
+        gui.setItem(4, balance);
+        gui.setItem(6, withdraw);
 
         player.openInventory(gui);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals("Bank Account")) {
+        if (event.getView().getTitle().equals(ChatColor.DARK_BLUE + "Bank Account")) {
             event.setCancelled(true);
             Player player = (Player) event.getWhoClicked();
             UUID uuid = player.getUniqueId();
+            
+            if (event.getCurrentItem() == null) return;
 
-            if (event.getCurrentItem() != null) {
-                if (event.getCurrentItem().getType() == Material.DIAMOND) {
+            switch (event.getCurrentItem().getType()) {
+                case EMERALD:
                     int diamonds = countDiamonds(player);
                     if (diamonds > 0) {
                         removeDiamonds(player, diamonds);
@@ -121,7 +120,8 @@ public class BankPlugin extends JavaPlugin implements Listener {
                     } else {
                         player.sendMessage(ChatColor.RED + "You have no diamonds to deposit.");
                     }
-                } else if (event.getCurrentItem().getType() == Material.CHEST) {
+                    break;
+                case GOLD_INGOT:
                     int balance = balances.getOrDefault(uuid, 0);
                     if (balance > 0) {
                         player.getInventory().addItem(new ItemStack(Material.DIAMOND, balance));
@@ -131,7 +131,7 @@ public class BankPlugin extends JavaPlugin implements Listener {
                     } else {
                         player.sendMessage(ChatColor.RED + "You have no diamonds in your bank.");
                     }
-                }
+                    break;
             }
         }
     }
