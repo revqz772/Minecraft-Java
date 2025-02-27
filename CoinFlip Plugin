@@ -8,20 +8,23 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.SkullMeta;
 import org.bukkit.plugin.java.JavaPlugin;
 
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class CoinFlipPlugin extends JavaPlugin implements Listener {
 
     private final Map<UUID, CoinFlip> coinFlips = new HashMap<>();
+    private BankPlugin bankPlugin;
 
     @Override
     public void onEnable() {
         Bukkit.getPluginManager().registerEvents(this, this);
+        this.bankPlugin = (BankPlugin) getServer().getPluginManager().getPlugin("BankPlugin");
         getLogger().info("CoinFlipPlugin has been enabled!");
     }
 
@@ -34,152 +37,111 @@ public class CoinFlipPlugin extends JavaPlugin implements Listener {
 
         Player player = (Player) sender;
 
-        switch (command.getName().toLowerCase()) {
-            case "coinflip":
-                if (args.length == 0) {
-                    openCoinFlipGUI(player);
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("create")) {
-                    if (args.length < 2) {
-                        player.sendMessage("Usage: /coinflip create <amount>");
-                        return true;
-                    }
-
-                    if (coinFlips.containsKey(player.getUniqueId())) {
-                        player.sendMessage("You already have an active coin flip. Use /coinflip delete to remove it.");
-                        return true;
-                    }
-
-                    try {
-                        double amount = Double.parseDouble(args[1]);
-                        if (amount <= 0) {
-                            player.sendMessage("Amount must be greater than zero.");
-                            return true;
-                        }
-
-                        coinFlips.put(player.getUniqueId(), new CoinFlip(player, amount));
-                        player.sendMessage("Coin flip created for " + amount + " coins!");
-                    } catch (NumberFormatException e) {
-                        player.sendMessage("Invalid amount. Please provide a number.");
-                    }
-
-                    return true;
-                }
-
-                if (args[0].equalsIgnoreCase("delete")) {
-                    if (!coinFlips.containsKey(player.getUniqueId())) {
-                        player.sendMessage("You don't have an active coin flip.");
-                        return true;
-                    }
-
-                    coinFlips.remove(player.getUniqueId());
-                    player.sendMessage("Your coin flip has been deleted.");
-                    return true;
-                }
-
-                player.sendMessage("Unknown subcommand. Use /coinflip, /coinflip create <amount>, or /coinflip delete.");
+        if (command.getName().equalsIgnoreCase("coinflip")) {
+            if (args.length == 0) {
+                openCoinFlipGUI(player);
                 return true;
+            }
+            
+            if (args[0].equalsIgnoreCase("create")) {
+                if (args.length < 2) {
+                    player.sendMessage("Usage: /coinflip create <amount>");
+                    return true;
+                }
 
-            default:
-                return false;
+                if (coinFlips.containsKey(player.getUniqueId())) {
+                    player.sendMessage("You already have an active coin flip. Use /coinflip delete to remove it.");
+                    return true;
+                }
+
+                try {
+                    int amount = Integer.parseInt(args[1]);
+                    if (amount <= 0) {
+                        player.sendMessage("Amount must be greater than zero.");
+                        return true;
+                    }
+                    
+                    int balance = bankPlugin.getBalance(player);
+                    if (balance < amount) {
+                        player.sendMessage("You do not have enough diamonds in the bank to place this bet.");
+                        return true;
+                    }
+
+                    bankPlugin.withdraw(player, amount);
+                    coinFlips.put(player.getUniqueId(), new CoinFlip(player, amount));
+                    player.sendMessage("Coin flip created for " + amount + " diamonds!");
+                } catch (NumberFormatException e) {
+                    player.sendMessage("Invalid amount. Please provide a number.");
+                }
+
+                return true;
+            }
         }
+        return false;
     }
 
     private void openCoinFlipGUI(Player player) {
         Inventory gui = Bukkit.createInventory(null, 27, "CoinFlip Arena");
-
         int slot = 0;
+        
         for (CoinFlip coinFlip : coinFlips.values()) {
             if (slot >= 27) break;
-
-            ItemStack playerHead = createPlayerHead(coinFlip.getOwner());
-            ItemMeta meta = playerHead.getItemMeta();
-            if (meta != null) {
-                meta.setDisplayName(coinFlip.getOwner().getName() + "'s CoinFlip");
-                meta.setLore(java.util.Arrays.asList("Amount: " + coinFlip.getAmount()));
-                playerHead.setItemMeta(meta);
-            }
-
-            gui.setItem(slot, playerHead);
+            ItemStack skull = createPlayerHead(coinFlip.getOwner());
+            gui.setItem(slot, skull);
             slot++;
         }
-
+        
         player.openInventory(gui);
     }
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
         if (!event.getView().getTitle().equals("CoinFlip Arena")) return;
-
         event.setCancelled(true);
-
+        
         Player player = (Player) event.getWhoClicked();
         ItemStack clickedItem = event.getCurrentItem();
-
+        
         if (clickedItem == null || clickedItem.getType() != Material.PLAYER_HEAD) return;
-
+        
         CoinFlip coinFlip = getCoinFlipFromItem(clickedItem);
-        if (coinFlip == null) return;
+        if (coinFlip == null || coinFlip.getOwner().equals(player)) return;
 
-        if (coinFlip.getOwner().equals(player)) {
-            player.sendMessage("You cannot challenge your own coin flip!");
-            return;
-        }
-
-        startCoinFlipAnimation(coinFlip, player);
+        startCoinFlip(coinFlip, player);
     }
 
     private CoinFlip getCoinFlipFromItem(ItemStack item) {
         if (!item.hasItemMeta() || !item.getItemMeta().hasDisplayName()) return null;
-
+        
         String name = item.getItemMeta().getDisplayName();
         for (CoinFlip coinFlip : coinFlips.values()) {
             if (name.contains(coinFlip.getOwner().getName())) {
                 return coinFlip;
             }
         }
-
         return null;
     }
 
-    private void startCoinFlipAnimation(CoinFlip coinFlip, Player challenger) {
-        Inventory animationGUI = Bukkit.createInventory(null, 27, "CoinFlip: " + coinFlip.getOwner().getName());
-
-        Bukkit.getScheduler().runTaskTimer(this, new Runnable() {
-            int frame = 0;
-
-            @Override
-            public void run() {
-                animationGUI.clear();
-
-                Player owner = coinFlip.getOwner();
-                ItemStack ownerHead = createPlayerHead(owner);
-                ItemStack challengerHead = createPlayerHead(challenger);
-
-                animationGUI.setItem(frame % 27, (frame % 2 == 0) ? ownerHead : challengerHead);
-                frame++;
-
-                if (frame == 20) { // End after 20 frames
-                    Bukkit.getScheduler().cancelTask(this.hashCode());
-                    Player winner = Math.random() > 0.5 ? owner : challenger;
-
-                    owner.sendMessage("CoinFlip: You " + (winner.equals(owner) ? "won" : "lost") + " " + coinFlip.getAmount() + " coins!");
-                    challenger.sendMessage("CoinFlip: You " + (winner.equals(challenger) ? "won" : "lost") + " " + coinFlip.getAmount() + " coins!");
-
-                    coinFlips.remove(owner.getUniqueId());
-                }
-            }
-        }, 0L, 5L);
+    private void startCoinFlip(CoinFlip coinFlip, Player challenger) {
+        Player owner = coinFlip.getOwner();
+        int amount = coinFlip.getAmount();
+        
+        boolean ownerWins = ThreadLocalRandom.current().nextBoolean();
+        Player winner = ownerWins ? owner : challenger;
+        Player loser = ownerWins ? challenger : owner;
+        
+        bankPlugin.deposit(winner, amount * 2);
+        coinFlips.remove(owner.getUniqueId());
+        
+        owner.sendMessage("CoinFlip: You " + (ownerWins ? "won" : "lost") + " " + amount + " diamonds!");
+        challenger.sendMessage("CoinFlip: You " + (!ownerWins ? "won" : "lost") + " " + amount + " diamonds!");
     }
 
     private ItemStack createPlayerHead(Player player) {
         ItemStack head = new ItemStack(Material.PLAYER_HEAD);
-        ItemMeta meta = head.getItemMeta();
+        SkullMeta meta = (SkullMeta) head.getItemMeta();
         if (meta != null) {
             meta.setDisplayName(player.getName());
-            meta.setLocalizedName(player.getUniqueId().toString());
             head.setItemMeta(meta);
         }
         return head;
@@ -187,9 +149,9 @@ public class CoinFlipPlugin extends JavaPlugin implements Listener {
 
     public static class CoinFlip {
         private final Player owner;
-        private final double amount;
+        private final int amount;
 
-        public CoinFlip(Player owner, double amount) {
+        public CoinFlip(Player owner, int amount) {
             this.owner = owner;
             this.amount = amount;
         }
@@ -198,7 +160,7 @@ public class CoinFlipPlugin extends JavaPlugin implements Listener {
             return owner;
         }
 
-        public double getAmount() {
+        public int getAmount() {
             return amount;
         }
     }
