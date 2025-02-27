@@ -4,6 +4,7 @@ import net.milkbowl.vault.economy.Economy;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -33,7 +34,7 @@ public class BountyPlugin extends JavaPlugin implements Listener {
         config = getConfig();
         loadBounties();
         setupEconomy();
-
+        
         getServer().getPluginManager().registerEvents(this, this);
         this.getCommand("setbounty").setExecutor(new SetBountyCommand());
         this.getCommand("bountylist").setExecutor(new BountyListCommand());
@@ -45,12 +46,16 @@ public class BountyPlugin extends JavaPlugin implements Listener {
     }
 
     private void loadBounties() {
-        config.getConfigurationSection("bounties").getKeys(false).forEach(key ->
+        if (config.contains("bounties")) {
+            config.getConfigurationSection("bounties").getKeys(false).forEach(key ->
                 bounties.put(UUID.fromString(key), config.getDouble("bounties." + key)));
+        }
     }
 
     private void saveBounties() {
-        bounties.forEach((uuid, amount) -> config.set("bounties." + uuid, amount));
+        for (Map.Entry<UUID, Double> entry : bounties.entrySet()) {
+            config.set("bounties." + entry.getKey().toString(), entry.getValue());
+        }
         saveConfig();
     }
 
@@ -107,9 +112,9 @@ public class BountyPlugin extends JavaPlugin implements Listener {
     }
 
     private void openBountyListGUI(Player player) {
-        List<UUID> bountyTargets = bounties.keySet().stream().collect(Collectors.toList());
+        List<UUID> bountyTargets = new ArrayList<>(bounties.keySet());
         int size = ((bountyTargets.size() - 1) / 9 + 1) * 9;
-        Inventory gui = Bukkit.createInventory(null, size, "Active Bounties");
+        Inventory gui = Bukkit.createInventory(null, size, ChatColor.DARK_RED + "Active Bounties");
 
         for (UUID uuid : bountyTargets) {
             OfflinePlayer target = Bukkit.getOfflinePlayer(uuid);
@@ -128,7 +133,7 @@ public class BountyPlugin extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
-        if (event.getView().getTitle().equals("Active Bounties")) {
+        if (event.getView().getTitle().equals(ChatColor.DARK_RED + "Active Bounties")) {
             event.setCancelled(true);
         }
     }
