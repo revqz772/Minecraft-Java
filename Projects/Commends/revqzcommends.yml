@@ -1,0 +1,132 @@
+name: AdminUtilities
+version: 1.0
+main: com.example.adminutilities.AdminUtilities
+api-version: 1.16
+
+authors:
+  - YourName
+
+description: A collection of useful admin commands for Minecraft.
+
+commands:
+  ban:
+    description: Bans a player from the server.
+    usage: /ban <player> [reason]
+    permission: adminutilities.ban
+  
+  kick:
+    description: Kicks a player from the server.
+    usage: /kick <player> [reason]
+    permission: adminutilities.kick
+  
+  gm:
+    description: Changes the game mode of the executing player.
+    usage: /gm <survival|creative|adventure|spectator>
+    permission: adminutilities.gm
+  
+  time:
+    description: Changes the time of day on the server.
+    usage: /time <day|night|ticks>
+    permission: adminutilities.time
+  
+  weather:
+    description: Changes the weather in the game world.
+    usage: /weather <clear|rain|thunder>
+    permission: adminutilities.weather
+  
+  teleport:
+    description: Teleports the player to specific coordinates.
+    usage: /teleport <x> <y> <z>
+    permission: adminutilities.teleport
+  
+  tp:
+    description: Teleports a player to another player.
+    usage: /tp <player>
+    permission: adminutilities.tp
+  
+  tphere:
+    description: Teleports another player to the executing player.
+    usage: /tphere <player>
+    permission: adminutilities.tphere
+  
+  setspawn:
+    description: Sets the server's spawn point.
+    usage: /setspawn
+    permission: adminutilities.setspawn
+  
+  spawn:
+    description: Teleports the player to the spawn location.
+    usage: /spawn
+    permission: adminutilities.spawn
+  
+  freeze:
+    description: Freezes a player, preventing movement.
+    usage: /freeze <player>
+    permission: adminutilities.freeze
+  
+  mute:
+    description: Mutes a player, preventing them from chatting.
+    usage: /mute <player>
+    permission: adminutilities.mute
+  
+  vanish:
+    description: Makes the player invisible to others.
+    usage: /vanish
+    permission: adminutilities.vanish
+  
+  speed:
+    description: Adjusts the player's movement speed.
+    usage: /speed <value>
+    permission: adminutilities.speed
+  
+  fly:
+    description: Toggles flight mode for a player.
+    usage: /fly
+    permission: adminutilities.fly
+  
+permissions:
+  adminutilities.ban:
+    description: Allows banning players.
+    default: op
+  adminutilities.kick:
+    description: Allows kicking players.
+    default: op
+  adminutilities.gm:
+    description: Allows changing game mode.
+    default: op
+  adminutilities.time:
+    description: Allows changing time.
+    default: op
+  adminutilities.weather:
+    description: Allows changing weather.
+    default: op
+  adminutilities.teleport:
+    description: Allows teleporting to coordinates.
+    default: op
+  adminutilities.tp:
+    description: Allows teleporting to a player.
+    default: op
+  adminutilities.tphere:
+    description: Allows teleporting a player to oneself.
+    default: op
+  adminutilities.setspawn:
+    description: Allows setting the spawn location.
+    default: op
+  adminutilities.spawn:
+    description: Allows teleporting to spawn.
+    default: op
+  adminutilities.freeze:
+    description: Allows freezing players.
+    default: op
+  adminutilities.mute:
+    description: Allows muting players.
+    default: op
+  adminutilities.vanish:
+    description: Allows toggling vanish mode.
+    default: op
+  adminutilities.speed:
+    description: Allows changing player speed.
+    default: op
+  adminutilities.fly:
+    description: Allows toggling flight.
+    default: op
