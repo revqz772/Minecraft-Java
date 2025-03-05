@@ -1,6 +1,6 @@
 name: revqzcommends
 version: 1.0
-main: me.revqz.adminsutilities.adminsUtilities
+main: me.revqz.adminutilities.adminUtilities
 api-version: 1.16
 authors:
   revqz :D
