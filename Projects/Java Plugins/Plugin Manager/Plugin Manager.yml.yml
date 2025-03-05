@@ -1,0 +1,19 @@
+name: PluginManager
+version: 1.0
+main: me.revqz.plugins.manager.PluginManager
+api-version: 1.21
+depend: [LuckPerms]
+description: Centralized plugin management system
+author: revqz / revqz722
+
+commands:
+  pm:
+    description: Plugin Manager commands
+    usage: /pm <list|enable|disable|reload> [plugin]
+    aliases: [pluginmanager]
+    permission: pluginmanager.admin
+
+permissions:
+  pluginmanager.admin:
+    description: Allows access to all plugin manager commands
+    default: op
