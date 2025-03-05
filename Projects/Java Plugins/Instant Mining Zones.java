@@ -1,4 +1,4 @@
-package com.example.instantminingzones;
+package me.revqz.instantminingzones;
 
 import org.bukkit.Bukkit;
 import org.bukkit.Material;
