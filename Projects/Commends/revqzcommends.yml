@@ -82,6 +82,11 @@ commands:
     usage: /fly
     permission: adminutilities.fly
   
+  Gravity Toggle:
+     description: Toggles no gravity and gravity for player.
+     usage: /gravity
+     permission: adminutilities.gravity
+  
 permissions:
   adminutilities.ban:
     description: Allows banning players.
@@ -127,4 +132,7 @@ permissions:
     default: op
   adminutilities.fly:
     description: Allows toggling flight.
+    default: op
+   adminutilities.gravity:
+    description: Allows to toggle Gravity
     default: op
