@@ -123,7 +123,7 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
                 Bukkit.broadcastMessage("§c§lKOTH Event has ended due to time limit!");
             }
         };
-        eventTimer.runTaskLater(this, 72000); // 72000 ticks = 1 hour
+        eventTimer.runTaskLater(this, 72000); 
     }
 
     private void stopEvent() {
@@ -144,7 +144,6 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
                     return;
                 }
 
-                // Create particle effects at KOTH location
                 kothLocation.getWorld().spawnParticle(Particle.FLAME, kothLocation, 50, 1, 1, 1, 0);
 
                 for (Player player : Bukkit.getOnlinePlayers()) {
@@ -187,7 +186,6 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
     }
 
     private void rewardPlayer(Player player) {
-        // Give KOTH key
         ItemStack kothKey = new ItemStack(Material.GOLDEN_HOE);
         ItemMeta meta = kothKey.getItemMeta();
         meta.setDisplayName("§6§lKOTH Key");
@@ -200,7 +198,6 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
         kothKey.setItemMeta(meta);
         player.getInventory().addItem(kothKey);
 
-        // Give configured rewards
         for (String reward : rewards) {
             String[] parts = reward.split(" ");
             Material material = Material.valueOf(parts[0]);
@@ -208,7 +205,6 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
             player.getInventory().addItem(new ItemStack(material, amount));
         }
 
-        // Effects and announcement
         player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 1.0f, 1.0f);
         Bukkit.broadcastMessage("§6§l" + player.getName() + " §ehas won the King of the Hill event!");
     }
