@@ -59,7 +59,6 @@ public class PluginManager extends JavaPlugin implements CommandExecutor {
     }
 
     private void registerPlugins() {
-        // Register your plugins here
         registerPlugin("AutoMine");
         registerPlugin("Bank");
         registerPlugin("CoinFlip");
