@@ -74,6 +74,6 @@ public class MineRegenerator extends JavaPlugin implements CommandExecutor {
                 generateMine();
                 Bukkit.broadcastMessage("The mine has been regenerated!");
             }
-        }.runTaskTimer(this, 20L * 60L * 30L, 20L * 60L * 30L); // Runs every 30 minutes
+        }.runTaskTimer(this, 20L * 60L * 30L, 20L * 60L * 30L); 
     }
 }
