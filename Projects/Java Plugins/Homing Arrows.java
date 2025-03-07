@@ -34,7 +34,6 @@ public class HomingArrows extends JavaPlugin implements Listener {
         Arrow arrow = (Arrow) event.getEntity();
         Player shooter = (Player) arrow.getShooter();
 
-        // Find nearest target
         LivingEntity nearest = null;
         double nearestDistance = 10.0;
         for (LivingEntity entity : shooter.getWorld().getLivingEntities()) {
