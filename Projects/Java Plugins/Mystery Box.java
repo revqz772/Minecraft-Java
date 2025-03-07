@@ -29,7 +29,7 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
     private List<LootItem> lootTable;
     private FileConfiguration config;
     private final Map<UUID, Long> playerCooldowns = new HashMap<>();
-    private static final long PLAYER_COOLDOWN = 60000; // 1 minute cooldown between uses
+    private static final long PLAYER_COOLDOWN = 60000; 
     private final NamespacedKey mysteryBoxKey;
 
     public MysteryBoxes() {
@@ -73,7 +73,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
         }
     }
 
-    // ... [Previous loadLootTable, saveLootTable, loadMysteryBoxes, and saveMysteryBoxes methods remain the same]
 
     @Override
     public boolean onCommand(CommandSender sender, Command command, String label, String[] args) {
@@ -152,7 +151,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
         }
     }
 
-    // ... [Previous handlePlaceCommand and handleReloadCommand methods remain the same]
 
     private void spawnHologram(Location loc) {
         new BukkitRunnable() {
@@ -195,7 +193,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
         }.runTaskTimer(this, 0L, 1L);
     }
 
-    // ... [Previous event handlers and utility methods remain the same]
 
     private static class MysteryBox {
         private final long creationTime;
@@ -225,5 +222,4 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
         }
     }
 
-    // ... [Previous LootItem class remains the same]
 }
