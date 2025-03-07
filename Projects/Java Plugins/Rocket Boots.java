@@ -130,7 +130,7 @@ public class RocketBoots extends JavaPlugin implements Listener, CommandExecutor
         flyingPlayers.remove(player);
         player.sendMessage("§cRocket Boots deactivated!");
 
-        // Start cooldown
+
         new BukkitRunnable() {
             @Override
             public void run() {
