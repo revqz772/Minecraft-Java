@@ -28,8 +28,8 @@ public class PlayerVaultsPlugin extends JavaPlugin implements Listener {
 
     private final Map<UUID, Map<Integer, Inventory>> playerVaults = new HashMap<>();
     private BankPlugin bankPlugin;
-    private final int VAULT_COST = 10; // Diamonds required per additional vault
-    private final int MAX_VAULTS = 10; // Maximum number of vaults per player
+    private final int VAULT_COST = 10; 
+    private final int MAX_VAULTS = 10; 
     private File vaultsFile;
     private FileConfiguration vaultsConfig;
     private final Map<UUID, Long> lastVaultAccess = new HashMap<>();
