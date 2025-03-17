@@ -65,7 +65,6 @@ public class FreezePlugin extends JavaPlugin implements CommandExecutor, Listene
     public void onPlayerMove(PlayerMoveEvent event) {
         Player player = event.getPlayer();
         if (frozenPlayers.contains(player.getUniqueId())) {
-            // Allow head movement but prevent position changes
             if (event.getTo().getX() != event.getFrom().getX() ||
                 event.getTo().getY() != event.getFrom().getY() ||
                 event.getTo().getZ() != event.getFrom().getZ()) {
