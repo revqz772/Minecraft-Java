@@ -41,14 +41,11 @@ public class PlayerVaultsPlugin extends JavaPlugin implements Listener {
         Bukkit.getPluginManager().registerEvents(this, this);
         this.bankPlugin = (BankPlugin) getServer().getPluginManager().getPlugin("BankPlugin");
         
-        // Load vaults data
         loadVaultsData();
         
-        // Register commands with tab completion
         getCommand("pv").setExecutor(this);
         getCommand("pvupgrade").setExecutor(this);
         
-        // Schedule auto-save task
         Bukkit.getScheduler().runTaskTimer(this, this::saveVaultsData, 6000L, 6000L); // Save every 5 minutes
         
         getLogger().info("PlayerVaults Plugin enabled!");
