@@ -78,7 +78,6 @@ public class AutoTorchPlugin extends JavaPlugin implements Listener, CommandExec
                     player.sendMessage("§eTorch placed automatically!");
                 }
                 
-                // Add cooldown
                 cooldowns.add(uuid);
                 getServer().getScheduler().runTaskLater(this, () -> cooldowns.remove(uuid), torchCooldown * 20L);
             }
