@@ -115,7 +115,6 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
         Bukkit.broadcastMessage("§6§lKOTH Event has started!");
         startKothChecker();
         
-        // Start 1 hour timer
         eventTimer = new BukkitRunnable() {
             @Override
             public void run() {
@@ -152,15 +151,14 @@ public class KOTHPlugin extends JavaPlugin implements CommandExecutor {
                             currentContender = player;
                             playerTime.put(player.getUniqueId(), playerTime.getOrDefault(player.getUniqueId(), 0) + 1);
                             int timeLeft = requiredTime - playerTime.get(player.getUniqueId());
-                            
-                            // Show progress via action bar
+                        
                             String progressBar = getProgressBar(playerTime.get(player.getUniqueId()), requiredTime);
                             player.sendActionBar(ChatColor.GOLD + "Capturing: " + progressBar + " §e" + timeLeft + "s");
                             
                             if (timeLeft <= 0) {
                                 rewardPlayer(player);
                                 stopEvent();
-                                startEvent(); // Restart event after capture
+                                startEvent(); 
                             }
                         }
                     } else if (player.equals(currentContender)) {
