@@ -57,7 +57,7 @@ public class ReportPlugin extends JavaPlugin implements Listener {
     }
 
     private void cleanOldReports() {
-        long cutoff = Instant.now().getEpochSecond() - 86400; // 24 hours ago
+        long cutoff = Instant.now().getEpochSecond() - 86400;
         List<String> toRemove = new ArrayList<>();
         
         for (String key : reportsConfig.getKeys(false)) {
