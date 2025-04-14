@@ -63,7 +63,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
             Location loc = entry.getKey();
             MysteryBox box = entry.getValue();
             
-            // Remove boxes that have been on cooldown for over 24 hours
             if (System.currentTimeMillis() - box.getCreationTime() > 86400000) {
                 loc.getBlock().setType(Material.AIR);
                 it.remove();
@@ -181,7 +180,7 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
                         loc.clone().add(x, y, z), 1, 0, 0, 0, 0);
                 }
                 
-                if (ticks % 20 == 0) { // Every second
+                if (ticks % 20 == 0) { 
                     loc.getWorld().spawnParticle(Particle.ENCHANTMENT_TABLE,
                         loc.clone(), 15, 0.5, 0.5, 0.5, 0);
                 }
