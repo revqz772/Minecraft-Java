@@ -46,7 +46,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
         getCommand("mysterybox").setExecutor(this);
         getLogger().info("MysteryBoxes Plugin enabled!");
         
-        // Start periodic save and cleanup task
         new BukkitRunnable() {
             @Override
             public void run() {
@@ -54,7 +53,7 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
                 cleanupExpiredBoxes();
                 getLogger().info("Auto-saving mystery boxes and cleaning up expired ones...");
             }
-        }.runTaskTimer(this, 6000L, 6000L); // Run every 5 minutes
+        }.runTaskTimer(this, 6000L, 6000L); //this will run every 5 minutes change it if you want
     }
 
     private void cleanupExpiredBoxes() {
@@ -174,7 +173,6 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
                 y += 0.05;
                 if (y > 2) y = 0;
                 
-                // Create a rotating particle effect
                 for (int i = 0; i < 4; i++) {
                     double angle = (ticks + (i * Math.PI/2)) % (2 * Math.PI);
                     double x = Math.cos(angle) * 0.5;
@@ -196,7 +194,7 @@ public class MysteryBoxes extends JavaPlugin implements Listener, CommandExecuto
 
     private static class MysteryBox {
         private final long creationTime;
-        private static final long COOLDOWN = 300000; // 5 minutes in milliseconds
+        private static final long COOLDOWN = 300000; 
         private final UUID owner;
 
         public MysteryBox(UUID owner) {
