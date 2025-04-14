@@ -24,10 +24,8 @@ public class BountyPlugin extends JavaPlugin implements Listener {
 
     @Override
     public void onEnable() {
-        // Register event listener
         getServer().getPluginManager().registerEvents(this, this);
 
-        // Register commands
         this.getCommand("setbounty").setExecutor(new SetBountyCommand());
         this.getCommand("bountylist").setExecutor(new BountyListCommand());
     }
@@ -79,7 +77,7 @@ public class BountyPlugin extends JavaPlugin implements Listener {
     }
 
     private void openBountyListGUI(Player player) {
-        int size = ((bounties.size() - 1) / 9 + 1) * 9; // Calculate inventory size (multiple of 9)
+        int size = ((bounties.size() - 1) / 9 + 1) * 9; 
         Inventory gui = Bukkit.createInventory(null, size, "Active Bounties");
 
         for (Map.Entry<UUID, Double> entry : bounties.entrySet()) {
