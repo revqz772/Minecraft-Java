@@ -46,7 +46,7 @@ public class PlayerVaultsPlugin extends JavaPlugin implements Listener {
         getCommand("pv").setExecutor(this);
         getCommand("pvupgrade").setExecutor(this);
         
-        Bukkit.getScheduler().runTaskTimer(this, this::saveVaultsData, 6000L, 6000L); // Save every 5 minutes
+        Bukkit.getScheduler().runTaskTimer(this, this::saveVaultsData, 6000L, 6000L); //will do this every 5m (:
         
         getLogger().info("PlayerVaults Plugin enabled!");
     }
