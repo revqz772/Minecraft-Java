@@ -122,7 +122,7 @@ public class PlayerVaultsPlugin extends JavaPlugin implements Listener {
 
         Player player = (Player) sender;
 
-        // Check for cooldown
+
         if (isOnCooldown(player)) {
             player.sendMessage(ChatColor.RED + "Please wait before using vaults again!");
             return true;
