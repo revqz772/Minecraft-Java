@@ -2,10 +2,7 @@ name: revqzcommends
 version: 1.0
 main: me.revqz.adminutilities.adminUtilities
 api-version: 1.16
-authors:
-  revqz :D
-description: A collection of useful + Admin commends commands for Minecraft.
-#You can change all the permission to what ever you want.
+description: Admin Commends or Utilities
 commands:
   ban:
     description: Bans a player from the server.
