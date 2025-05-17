@@ -2,20 +2,6 @@
 
 A collection of custom Minecraft plugins developed by revqz772.
 
-## Plugins
-
-- **Plugin Manager**: Centralized management system for all plugins
-- **Auto Mine**: Automated mining system
-- **Bank**: Player banking system
-- **CoinFlip**: Gambling minigame
-- **Home**: Home teleportation system
-- **Homing Arrows**: Special arrows that track targets
-- **Instant Mining Zones**: Areas with instant block breaking
-- **Mystery Box**: Random reward system
-- **Player Vaults**: Personal storage system
-- **Report**: Player reporting system
-- **Rocket Boots**: Special movement equipment
-
 ## Requirements
 
 - Java 17 or higher
