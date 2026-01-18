@@ -1,4 +1,4 @@
-# Minecraft Plugins Collection
+# Minecraft Plugins Collectio
 
 A collection of custom Minecraft plugins developed by revqz772.
 
@@ -8,7 +8,7 @@ A collection of custom Minecraft plugins developed by revqz772.
 - Spigot/Paper 1.21.1
 - LuckPerms
 
-## Installation
+## Installatio
 
 1. Download the latest release from the releases page
 2. Place the plugin JARs in your server's `plugins` folder
