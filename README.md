@@ -1,4 +1,4 @@
-# Minecraft Plugins Collectio
+# Minecraft Plugins Collect
 
 A collection of custom Minecraft plugins developed by revqz772.
 
