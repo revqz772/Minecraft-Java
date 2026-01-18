@@ -1,11 +1,11 @@
-# Minecraft Plugins Collectio
+# Minecraft Plugins Collect
 
 A collection of custom Minecraft plugins developed by revqz772.
 
 ## Requirements
 
 - Java 17 or higher
-- Spigot/Paper 1.21.1
+- Spigot/Paper 
 - LuckPerms
 
 ## Installatio
