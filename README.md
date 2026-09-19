@@ -1,4 +1,4 @@
-# Minecraft Plugins Collec
+# Minecraft Plugins Collecadadadwd
 
 A collection of custom Minecraft plugins developed by revqz772.
 
